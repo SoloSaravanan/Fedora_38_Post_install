@@ -1,6 +1,6 @@
 # Fedora_38_Post_install
 
-#Configure dnf
+# Configure dnf
 
 ```sh
 sudo nano /etc/dnf/dnf.conf
@@ -14,13 +14,13 @@ countme=false
 installonly_limit=2
 ```
 
-#Update system and reboot
+# Update system and reboot
 
 ```sh
 sudo dnf upgrade -y
 ```
 
-#Setting umask to 077
+# Setting umask to 077
 
 ```sh
 umask 077
@@ -28,7 +28,7 @@ sudo sed -i 's/umask 002/umask 077/g' /etc/bashrc
 sudo sed -i 's/umask 022/umask 077/g' /etc/bashrc
 ```
 
-#Debloat some apps
+# Debloat some apps
 
 ```sh
 sudo dnf remove akregator mediawriter kmag kgpg qt5-qdbusviewer kcharselect kcolorchooser dragon kmines kmahjongg kpat kruler kmousetool kmouth konversation krdc kfind kaddressbook kmail kontact korganizer ktnef libreoffice-* kf5-akonadi-* adcli anaconda* dmidecode bluez-cu ps hyperv* alsa-sof-firmware virtualbox-guest-additions fedora-bookmarks mailcap open-vm-tools rsync samba-client libertas-usb8388-firmware linux-firmware xorg-x11-drv-vmware sos kpartx dos2unix sssd  spice-vdagent perl-IO-Socket-SSL openrgb inkscape zram-generator plasma-vault plasma-browser-integration plasma-thunderbolt cyrus-sasl-plain traceroute mtr realmd teamd tcpdump nmap-ncat geoclue2 openconnect openvpn ppp pptp
@@ -51,7 +51,7 @@ sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-rel
 sudo dnf groupupdate core -y
 ```
 
-#Disable Baloo
+# Disable Baloo
 
 ```sh
 balooctl disable
@@ -59,13 +59,13 @@ balooctl purge
 sudo rm -rf .local/share/baloo/
 ```
 
-#Disable Krunner
+# Disable Krunner
 
 ```sh
 sudo chmod -x /usr/bin/krunner
 ```
 
-#Disbale IPV6
+# Disbale IPV6
 
 ```sh
 sudo nano /etc/sysctl.conf
@@ -79,20 +79,20 @@ net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 ```
 
-#Disable rsyslog
+# Disable rsyslog
 
 ```sh
 sudo service rsyslog stop
 sudo systemctl disable rsyslog
 ```
 
-#Disable hibernate
+# Disable hibernate
 
 ```sh
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 ```
 
-#Install KVM
+# Install KVM
 
 ```sh
 sudo dnf install @virtualization
@@ -110,7 +110,7 @@ sudo curl https://raw.githubusercontent.com/Kicksecure/security-misc/master/etc/
 sudo curl https://raw.githubusercontent.com/Kicksecure/security-misc/master/etc/sysctl.d/30_silent-kernel-printk.conf -o /etc/sysctl.d/30_silent-kernel-printk.conf 
 ```
 
-#Enable bluetooth from Kicksecure's patches
+# Enable bluetooth from Kicksecure's patches
 
 ```sh
 sudo sed -i 's/install bluetooth /bin/disabled-bluetooth-by-security-misc/#install bluetooth /bin/disabled-bluetooth-by-security-misc/g' /etc/modprobe.d/30_security-misc.conf
@@ -153,7 +153,7 @@ sudo firewall-cmd --permanent --add-port=1714-1764/tcp
 sudo firewall-cmd --reload
 ```
 
-#Randomize MAC address and disable static hostname
+# Randomize MAC address and disable static hostname
 
 ```sh
 sudo nano /etc/NetworkManager/conf.d/00-macrandomize.conf
@@ -178,7 +178,7 @@ sudo systemctl restart NetworkManager
 sudo hostnamectl hostname "localhost"
 ```
 
-#MULTIMEDIA
+# Install Multimedia Codecs
 
 ```sh
 sudo dnf install -y libavcodec-free libavdevice-free libavfilter-free libavutil-free libavformat-free libpostproc-free libswscale-free libswresample-free --allowerasing
