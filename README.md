@@ -113,8 +113,8 @@ sudo curl https://raw.githubusercontent.com/Kicksecure/security-misc/master/etc/
 # Enable bluetooth from Kicksecure's patches
 
 ```sh
-sudo sed -i 's/install bluetooth /bin/disabled-bluetooth-by-security-misc/#install bluetooth /bin/disabled-bluetooth-by-security-misc/g' /etc/modprobe.d/30_security-misc.conf
-sudo sed -i 's/install btusb /bin/disabled-bluetooth-by-security-misc/#install btusb /bin/disabled-bluetooth-by-security-misc/g' /etc/modprobe.d/30_security-misc.conf
+sudo sed -i 's/install bluetooth/#install bluetooth/g' /etc/modprobe.d/30_security-misc.conf
+sudo sed -i 's/install btusb/#install btusb/g' /etc/modprobe.d/30_security-misc.conf
 ```
 
  # Enable Kicksecure CPU mitigations 
