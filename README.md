@@ -3,15 +3,8 @@
 # Configure dnf
 
 ```sh
-sudo nano /etc/dnf/dnf.conf
-```
-
-Paste below
-
-```sh
-max_parallel_downloads=10 
-countme=false
-installonly_limit=2
+sudo sed -i '1 amax_parallel_downloads=10 ' /etc/dnf/dnf.conf
+sudo sed -i '2 acountme=false' /etc/dnf/dnf.conf
 ```
 
 # Update system and reboot
@@ -186,8 +179,8 @@ rpm -e --nodeps libavcodec-free libavdevice-free libavfilter-free libavutil-free
 ```
 
 ```sh
-sudo dnf swap mesa-va-drivers-freeworld mesa-va-drivers
-sudo dnf swap mesa-vdpau-drivers-freeworld mesa-vdpau-drivers
+sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
+sudo dnf swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 ```
 
 ```sh
