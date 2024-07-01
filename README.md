@@ -44,7 +44,7 @@ sudo dnf swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
 ```sh
 sudo dnf swap libva-intel-media-driver intel-media-driver --allowerasing
-'''
+```
 
 ```sh
 sudo dnf groupupdate 'core' 'multimedia' 'sound-and-video' --exclude=zram-generator-defaults --setopt='install_weak_deps=False' --exclude='PackageKit-gstreamer-plugin' --allowerasing && sync 
