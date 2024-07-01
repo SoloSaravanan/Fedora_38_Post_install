@@ -1,35 +1,16 @@
-# Fedora_38_Post_install
+# Fedora_40_Post_install
 
 # Configure dnf
 
 ```sh
-sudo sed -i '1 amax_parallel_downloads=10 ' /etc/dnf/dnf.conf
-sudo sed -i '2 acountme=false' /etc/dnf/dnf.conf
+sudo sed -i '8 amax_parallel_downloads=10 ' /etc/dnf/dnf.conf
+sudo sed -i '9 acountme=false' /etc/dnf/dnf.conf
 ```
 
 # Update system and reboot
 
 ```sh
 sudo dnf upgrade -y
-```
-
-# Setting umask to 077
-
-```sh
-umask 077
-sudo sed -i 's/umask 002/umask 077/g' /etc/bashrc
-sudo sed -i 's/umask 022/umask 077/g' /etc/bashrc
-```
-
-# Debloat some apps
-
-```sh
-sudo dnf remove akregator mediawriter kmag kgpg qt5-qdbusviewer kcharselect kcolorchooser dragon kmines kmahjongg kpat kruler kmousetool kmouth konversation krdc kfind kaddressbook kmail kontact korganizer ktnef libreoffice-* kf5-akonadi-* adcli anaconda* dmidecode bluez-cu ps hyperv* alsa-sof-firmware virtualbox-guest-additions fedora-bookmarks mailcap open-vm-tools rsync samba-client libertas-usb8388-firmware linux-firmware xorg-x11-drv-vmware sos kpartx dos2unix sssd  spice-vdagent perl-IO-Socket-SSL openrgb inkscape zram-generator plasma-vault plasma-browser-integration plasma-thunderbolt cyrus-sasl-plain traceroute mtr realmd teamd tcpdump nmap-ncat geoclue2 openconnect openvpn ppp pptp
-```
-
-# Run Updates
-
-```sh
 sudo dnf autoremove -y
 sudo fwupdmgr get-devices
 sudo fwupdmgr refresh --force
@@ -37,12 +18,44 @@ sudo fwupdmgr get-updates -y
 sudo fwupdmgr update -y
 ```
 
+# Debloat some apps
+
+```sh
+sudo dnf remove dragon k3b kaddressbook kaddressbook-libs kdeaccessibility* kdepim-addons kdepim-runtime kdepim-runtime-libs kdiagram kf5-akonadi-calendar kf5-akonadi-mime kf5-akonadi-notes kf5-akonadi-search kf5-calendarsupport kf5-eventviews kf5-incidenceeditor kf5-kcalendarcore kf5-kcalendarutils kf5-kdav kf5-kidentitymanagement kf5-kimap kf5-kitinerary kf5-kldap kf5-kmailtransport kf5-kmailtransport-akonadi kf5-kmbox kf5-kontactinterface kf5-kpimtextedit kf5-kpkpass kf5-kross-core kf5-ksmtp kf5-ktnef kf5-libgravatar kf5-libkdepim kf5-libkleo kf5-libksane kf5-libksieve kf5-mailcommon kf5-mailimporter kf5-mailimporter-akonadi kf5-messagelib kf5-pimcommon kf5-pimcommon-akonadi kio-gdrive kipi-plugins kmahjongg kmail kmail-account-wizard kmail-libs kmines kolourpaint kolourpaint-libs kontact kontact-libs konversation korganizer korganizer-libs kpat krdc krdc-libs krfb krfb-libs krusader ktorrent kwrite libkdegames libkgapi libkmahjongg libkmahjongg-data libkolabxml libphonenumber libwinpr mpage pim-data-exporter pim-data-exporter-libs pim-sieve-editor plasma-welcome qgpgme qt5-qtwebengine-freeworld qtkeychain-qt5 scim* system-config-printer system-config-services system-config-users unoconv xsane xsane-gimp abrt-desktop akregator mediawriter kmag kgpg qt5-qdbusviewer kcharselect kcolorchooser kruler kmousetool kmouth kfind libreoffice-* kf5-akonadi-* adcli anaconda* dmidecode bluez-cups hyperv* virtualbox-guest-additions fedora-bookmarks mailcap open-vm-tools rsync samba-client libertas-usb8388-firmware xorg-x11-drv-vmware sos kpartx dos2unix sssd  spice-vdagent openrgb inkscape zram-generator plasma-vault plasma-browser-integration plasma-thunderbolt cyrus-sasl-plain traceroute mtr realmd teamd tcpdump nmap-ncat openconnect openvpn ppp pptp
+```
+
 # Setup RPMFusion 
 
 ```sh
-sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm 
+sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 sudo dnf groupupdate core -y
 ```
+
+# Install Multimedia Codecs
+
+# AMD
+
+```sh
+sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
+sudo dnf swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
+```
+
+# Intel
+
+```sh
+sudo dnf swap libva-intel-media-driver intel-media-driver --allowerasing
+'''
+
+```sh
+sudo dnf groupupdate 'core' 'multimedia' 'sound-and-video' --exclude=zram-generator-defaults --setopt='install_weak_deps=False' --exclude='PackageKit-gstreamer-plugin' --allowerasing && sync 
+sudo dnf swap 'ffmpeg-free' 'ffmpeg' --allowerasing
+sudo dnf config-manager --set-enabled fedora-cisco-openh264
+sudo dnf install gstreamer1-plugins-{bad-\*,good-\*,base} openh264 mozilla-openh264 gstreamer1-plugin-openh264 gstreamer1-libav --exclude=gstreamer1-plugins-bad-free-devel ffmpeg ffmpeg-libs libva libva-utils gstreamer-ffmpeg --exclude=gstreamer1-plugins-bad-free-opencv
+sudo dnf install libva-nvidia-driver.{i686,x86_64}
+sudo dnf install lame\* --exclude=lame-devel
+sudo dnf group upgrade --with-optional Multimedia
+```
+
 
 # Disable Baloo
 
@@ -58,7 +71,7 @@ sudo rm -rf .local/share/baloo/
 sudo chmod -x /usr/bin/krunner
 ```
 
-# Disbale IPV6
+# Disbale IPV6 and tweak some vm
 
 ```sh
 sudo nano /etc/sysctl.conf
@@ -67,6 +80,11 @@ sudo nano /etc/sysctl.conf
 Paste below
 
 ```sh
+kernel.printk = 0 0 0 0
+vm.dirty_bytes=50331648
+vm.dirty_background_bytes=16777216
+vm.dirty_background_ratio=0
+vm.dirty_ratio=0
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
@@ -83,16 +101,6 @@ sudo systemctl disable rsyslog
 
 ```sh
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
-```
-
-# Install KVM
-
-```sh
-sudo dnf install @virtualization
-sudo sed -i 's/#unix_sock_group = "libvirt"/unix_sock_group = "libvirt"/g' /etc/libvirt/libvirtd.conf
-sudo sed -i 's/#unix_sock_rw_perms = "0770"/unix_sock_rw_perms = "0770"/g' /etc/libvirt/libvirtd.conf
-sudo systemctl enable libvirtd
-sudo usermod -aG libvirt $(whoami)
 ```
 
 # Harden the Kernel with Kicksecure's patches
@@ -171,34 +179,21 @@ sudo systemctl restart NetworkManager
 sudo hostnamectl hostname "localhost"
 ```
 
-# Install Multimedia Codecs
+# Setting umask to 077
 
 ```sh
-sudo dnf install -y libavcodec-free libavdevice-free libavfilter-free libavutil-free libavformat-free libpostproc-free libswscale-free libswresample-free --allowerasing
-rpm -e --nodeps libavcodec-free libavdevice-free libavfilter-free libavutil-free libavformat-free libpostproc-free libswscale-free libswresample-free
+umask 077
+sudo sed -i 's/umask 002/umask 077/g' /etc/bashrc
+sudo sed -i 's/umask 022/umask 077/g' /etc/bashrc
 ```
 
-```sh
-sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
-sudo dnf swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
-```
+# Install KVM
 
 ```sh
-sudo dnf install -y faad2-libs gpac-libs gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer1-plugin-libav libavdevice libdca libde265 libfreeaptx libheif libftl librtmp live555 mjpegtools-libs mlt mlt-freeworld opencore-amr pipewire-codec-aptx svt-hevc-libs vo-amrwbenc libmediainfo mediainfo x264 x264-libs x265 x265-libs xvidcore vlc intel-media-driver libva-intel-driver nvidia-vaapi-driver mesa-va-drivers-freeworld mesa-vdpau-drivers-freeworld ffmpeg ffmpeg-libs compat-ffmpeg4 ffmpegthumbs --best --allowerasing
-```
-
-```sh
-pkcon refresh force
-pkcon update -y rpmfusion-nonfree-release fedora-repos
-pkcon refresh force
-pkcon install -y faad2-libs gpac-libs gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer1-plugin-libav libavdevice libdca libde265 libfreeaptx libheif
-pkcon install -y libftl librtmp live555 mjpegtools-libs mlt mlt-freeworld opencore-amr pipewire-codec-aptx svt-hevc-libs vo-amrwbenc libmediainfo mediainfo
-pkcon install -y x264 x264-libs x265 x265-libs xvidcore vlc
-pkcon install -y faad2-libs gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer1-plugin-libav libdca libde265 librtmp mjpegtools-libs --filter ~arch
-pkcon install -y opencore-amr vo-amrwbenc x264-libs x265-libs --filter ~arch
-pkcon install -y intel-media-driver libva-intel-driver nvidia-vaapi-driver mesa-va-drivers-freeworld mesa-vdpau-drivers-freeworld
-pkcon install -y ffmpeg
-pkcon install -y ffmpeg-libs compat-ffmpeg4
-pkcon install -y ffmpeg-libs --filter ~arch
-pkcon install -y ffmpegthumbs
+sudo dnf install @virtualization
+sudo systemctl start libvirtd
+sudo systemctl enable libvirtd
+sudo sed -i 's/#unix_sock_group = "libvirt"/unix_sock_group = "libvirt"/g' /etc/libvirt/libvirtd.conf
+sudo sed -i 's/#unix_sock_rw_perms = "0770"/unix_sock_rw_perms = "0770"/g' /etc/libvirt/libvirtd.conf
+sudo usermod -a -G libvirt $(whoami)
 ```
